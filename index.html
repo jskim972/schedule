@@ -1,0 +1,537 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>K국 단기선교 수련회 일정</title>
+<style>
+  :root {
+    --bg: #f6f5f2;
+    --card: #ffffff;
+    --ink: #1f2430;
+    --muted: #6b7280;
+    --line: #e5e7eb;
+    --accent: #3a5a7a;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    padding-bottom: 60px;
+  }
+  header {
+    background: var(--accent);
+    color: white;
+    padding: 18px 16px 14px;
+    position: sticky;
+    top: 0;
+    z-index: 20;
+  }
+  header h1 {
+    margin: 0 0 2px;
+    font-size: 1.15rem;
+    font-weight: 700;
+  }
+  header p {
+    margin: 0;
+    font-size: 0.8rem;
+    opacity: 0.85;
+  }
+
+  .names {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 12px 16px;
+    background: var(--card);
+    border-bottom: 1px solid var(--line);
+    position: sticky;
+    top: 64px;
+    z-index: 19;
+  }
+  .name-btn {
+    border: 2px solid var(--line);
+    background: white;
+    border-radius: 999px;
+    padding: 7px 14px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--ink);
+    cursor: pointer;
+    white-space: nowrap;
+    transition: transform 0.1s ease;
+  }
+  .name-btn:active { transform: scale(0.96); }
+  .name-btn.selected {
+    color: white;
+    border-color: transparent;
+  }
+  .name-btn.clear {
+    color: var(--muted);
+    font-weight: 500;
+    border-style: dashed;
+  }
+  .name-btn.all {
+    color: var(--accent);
+    font-weight: 700;
+    border-color: var(--accent);
+    border-style: dashed;
+  }
+  .name-btn.all.selected {
+    background: var(--accent);
+    color: white;
+    border-color: var(--accent);
+  }
+
+  .day-tabs {
+    display: flex;
+    gap: 6px;
+    padding: 10px 16px;
+    overflow-x: auto;
+    background: var(--bg);
+  }
+  .day-btn {
+    flex: 1 0 auto;
+    border: none;
+    background: white;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 10px 8px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--muted);
+    cursor: pointer;
+    text-align: center;
+    min-width: 78px;
+  }
+  .day-btn .d { display: block; font-size: 0.7rem; font-weight: 500; margin-top: 2px; }
+  .day-btn.active {
+    background: var(--accent);
+    color: white;
+    border-color: var(--accent);
+  }
+
+  main { padding: 12px 16px 8px; max-width: 640px; margin: 0 auto; }
+
+  .responsibilities {
+    background: var(--card);
+    border-radius: 14px;
+    padding: 14px 16px;
+    margin-bottom: 16px;
+    border: 1px solid var(--line);
+  }
+  .responsibilities h2 {
+    margin: 0;
+    font-size: 0.95rem;
+  }
+  .resp-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    user-select: none;
+  }
+  .resp-header .chevron {
+    font-size: 0.75rem;
+    color: var(--muted);
+    padding-left: 10px;
+  }
+  .resp-body {
+    margin-top: 10px;
+  }
+  .resp-group { margin-bottom: 10px; }
+  .resp-group:last-child { margin-bottom: 0; }
+  .resp-group h3 {
+    margin: 0 0 6px;
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--muted);
+    font-weight: 700;
+  }
+  .resp-item {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    padding: 5px 0;
+    font-size: 0.88rem;
+  }
+  .resp-item .tag {
+    font-size: 0.68rem;
+    color: var(--muted);
+    white-space: nowrap;
+  }
+  .empty-hint {
+    font-size: 0.85rem;
+    color: var(--muted);
+    text-align: center;
+    padding: 10px 4px;
+    background: var(--card);
+    border: 1px dashed var(--line);
+    border-radius: 14px;
+    margin-bottom: 16px;
+  }
+
+  .schedule-list { display: flex; flex-direction: column; gap: 6px; }
+  .slot {
+    display: flex;
+    gap: 12px;
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-left: 5px solid var(--line);
+    border-radius: 10px;
+    padding: 10px 12px;
+    align-items: center;
+  }
+  .slot .time {
+    flex: 0 0 82px;
+    font-size: 0.72rem;
+    color: var(--muted);
+    font-weight: 600;
+    line-height: 1.25;
+  }
+  .slot .label {
+    font-size: 0.9rem;
+    font-weight: 600;
+    flex: 1;
+  }
+  .slot .badges {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    align-items: flex-end;
+  }
+  .slot .badge {
+    font-size: 0.65rem;
+    font-weight: 700;
+    color: white;
+    padding: 2px 8px;
+    border-radius: 999px;
+    white-space: nowrap;
+  }
+  .slot.mine {
+    font-weight: 700;
+  }
+  .slot .accent {
+    flex: 0 0 5px;
+    align-self: stretch;
+    margin: -10px 0 -10px -12px;
+    border-radius: 10px 0 0 10px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+  .slot .accent > span { flex: 1; }
+  .slot.unowned .label { color: var(--muted); font-weight: 500; }
+
+  footer {
+    text-align: center;
+    font-size: 0.72rem;
+    color: var(--muted);
+    padding: 18px 16px 6px;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>K국 단기선교 수련회</h1>
+  <p>AUG 23–26 · 팀 일정 &amp; 담당 확인</p>
+</header>
+
+<div class="names" id="names"></div>
+
+<div class="day-tabs" id="dayTabs"></div>
+
+<main>
+  <div id="respArea"></div>
+  <div class="schedule-list" id="scheduleList"></div>
+</main>
+
+<footer>이름을 선택하면 내 담당 일정이 강조 표시됩니다.</footer>
+
+<script>
+const PEOPLE = [
+  { id: "minju",    name: "민주",      color: "#E63946" },
+  { id: "yesun",    name: "예선",        color: "#F4A261" },
+  { id: "hyeri",    name: "혜리",        color: "#D4A017" },
+  { id: "seongtae", name: "성태",        color: "#2A9D8F" },
+  { id: "changgyu", name: "창규",        color: "#264653" },
+  { id: "seongmin", name: "성민",        color: "#6A4C93" },
+  { id: "leehyun",  name: "이현",        color: "#3A86FF" },
+  { id: "pastor",   name: "신용성 목사님", color: "#A6762A" },
+];
+
+const DAYS = [
+  {
+    id: "mon", label: "월", date: "AUG 23",
+    slots: [
+      { time: "4:00–5:00 PM",  label: "CHECK IN", owners: [] },
+      { time: "5:00–6:00 PM",  label: "DINNER", owners: [] },
+      { time: "6:00–7:30 PM",  label: "ORIENTATION & ICE BREAKING", owners: ["seongtae","yesun"] },
+      { time: "7:30–9:00 PM",  label: "WORSHIP & PRAYER", owners: ["pastor","changgyu"] },
+      { time: "9:00–10:30 PM", label: "SMALL GROUP", owners: [] },
+    ]
+  },
+  {
+    id: "tue", label: "화", date: "AUG 24",
+    slots: [
+      { time: "7:30–8:00 AM",   label: "MORNING PRAISE W/ GOD", owners: ["changgyu"] },
+      { time: "8:00–9:00 AM",   label: "BREAKFAST", owners: [] },
+      { time: "9:00–10:30 AM",  label: "GRACE SEMINAR", owners: ["seongtae"] },
+      { time: "10:30–11:00 AM", label: "SMALL GROUP", owners: [] },
+      { time: "11:00–11:30 AM", label: "GROUP PROJECT INTRODUCTION", owners: ["hyeri","seongmin"] },
+      { time: "12:00–1:00 PM",  label: "LUNCH", owners: [] },
+      { time: "1:00–2:00 PM",   label: "RELATIONSHIPS SEMINAR", owners: ["hyeri"] },
+      { time: "2:00–3:00 PM",   label: "GROUP PROJECT", owners: ["hyeri","seongmin"] },
+      { time: "3:00–3:30 PM",   label: "BREAK TIME", owners: [] },
+      { time: "3:30–4:30 PM",   label: "ACTIVITY (INSIDE → OUTSIDE)", owners: ["leehyun","seongmin"] },
+      { time: "4:30–5:30 PM",   label: "SWIMMING TIME", owners: [] },
+      { time: "5:30–6:30 PM",   label: "DINNER", owners: [] },
+      { time: "6:30–8:30 PM",   label: "WORSHIP", owners: ["pastor","changgyu"] },
+      { time: "8:30–9:30 PM",   label: "SMALL GROUP", owners: [] },
+      { time: "9:30–10:30 PM",  label: "MOVIE NIGHT (OPT)", owners: ["pastor","seongtae"] },
+    ]
+  },
+  {
+    id: "wed", label: "수", date: "AUG 25",
+    slots: [
+      { time: "7:30–8:00 AM",   label: "MORNING PRAISE W/ GOD", owners: ["changgyu"] },
+      { time: "8:00–9:00 AM",   label: "BREAKFAST", owners: [] },
+      { time: "9:00–10:30 AM",  label: "INTERACTIVE ACTIVITY (MBTI / SPIRITUAL GIFTS)", owners: ["leehyun","seongmin"] },
+      { time: "10:30–11:30 AM", label: "GROUP PROJECT", owners: ["hyeri","seongmin"] },
+      { time: "12:00–1:00 PM",  label: "LUNCH", owners: [] },
+      { time: "1:00–2:00 PM",   label: "STEWARDSHIP SEMINAR", owners: ["changgyu"] },
+      { time: "2:00–3:00 PM",   label: "ARTS & CRAFTS", owners: ["yesun","leehyun"] },
+      { time: "3:00–5:00 PM",   label: "VAMOS TO EREMOS (광야 PROJECT)", owners: ["minju","yesun"] },
+      { time: "5:00–6:00 PM",   label: "DINNER", owners: [] },
+      { time: "6:00–7:30 PM",   label: "성경 인물 PRESENTATION", owners: ["hyeri","seongmin"] },
+      { time: "7:30–9:30 PM",   label: "WORSHIP & PRAYER NIGHT", owners: ["pastor","changgyu"] },
+      { time: "9:30–10:30 PM",  label: "CAMP FIRE?", owners: [] },
+    ]
+  },
+  {
+    id: "thu", label: "목", date: "AUG 26",
+    slots: [
+      { time: "7:30–8:30 AM",  label: "BREAKFAST", owners: [] },
+      { time: "8:30–9:30 AM",  label: "WORSHIP & PRAYER (COMMUNION)", owners: ["pastor","changgyu"] },
+      { time: "9:30–10:30 AM", label: "SHARING TIME", owners: ["seongtae"] },
+    ]
+  },
+];
+
+// Standing roles: not tied to a schedule slot
+const STANDING_ROLES = {
+  minju:    ["기도편지 (rotation)", "찬양팀"],
+  yesun:    ["회계", "찬양팀"],
+  hyeri:    ["사진/영상", "물품담당", "언어 및 문화"],
+  seongtae: ["찬양팀"],
+  changgyu: ["회계", "찬양팀"],
+  seongmin: ["액티비티"],
+  leehyun:  ["서기", "기도편지 (rotation)", "액티비티"],
+  pastor:   ["영적지주"],
+};
+
+// Pre-retreat prep responsibilities
+const PREP_ROLES = {
+  minju:    ["Hoodies 준비", "Weakness Wall 준비"],
+  yesun:    ["Weakness Wall 준비"],
+  hyeri:    ["선물 (학생용)", "선물 (YAJA용)", "물품 준비"],
+  leehyun:  ["기도카드 준비"],
+};
+
+function loadSelected() {
+  const raw = localStorage.getItem("retreat_people");
+  if (raw) {
+    try {
+      const arr = JSON.parse(raw);
+      if (Array.isArray(arr)) return new Set(arr);
+    } catch (e) {}
+  }
+  // migrate old single-select value if present
+  const legacy = localStorage.getItem("retreat_person");
+  if (legacy) return new Set([legacy]);
+  return new Set();
+}
+
+function saveSelected() {
+  localStorage.setItem("retreat_people", JSON.stringify([...state.selected]));
+}
+
+const state = {
+  selected: loadSelected(),
+  day: "mon",
+  allMode: false,
+  collapsed: new Set(),
+};
+
+function personById(id) { return PEOPLE.find(p => p.id === id); }
+
+function renderNames() {
+  const el = document.getElementById("names");
+  el.innerHTML = "";
+  PEOPLE.forEach(p => {
+    const btn = document.createElement("button");
+    const isSelected = state.selected.has(p.id);
+    btn.className = "name-btn" + (isSelected ? " selected" : "");
+    btn.textContent = p.name;
+    if (isSelected) btn.style.background = p.color;
+    btn.onclick = () => {
+      if (state.selected.has(p.id)) state.selected.delete(p.id);
+      else state.selected.add(p.id);
+      state.allMode = false;
+      saveSelected();
+      render();
+    };
+    el.appendChild(btn);
+  });
+
+  const allSelected = state.selected.size === PEOPLE.length;
+  const allBtn = document.createElement("button");
+  allBtn.className = "name-btn all" + (allSelected ? " selected" : "");
+  allBtn.textContent = "전체 선택";
+  allBtn.onclick = () => {
+    if (allSelected) {
+      state.selected.clear();
+      state.allMode = false;
+    } else {
+      PEOPLE.forEach(p => state.selected.add(p.id));
+      state.allMode = true;
+    }
+    saveSelected();
+    render();
+  };
+  el.appendChild(allBtn);
+
+  const clearBtn = document.createElement("button");
+  clearBtn.className = "name-btn clear";
+  clearBtn.textContent = "선택 해제";
+  clearBtn.onclick = () => { state.selected.clear(); state.allMode = false; saveSelected(); render(); };
+  el.appendChild(clearBtn);
+}
+
+function renderDayTabs() {
+  const el = document.getElementById("dayTabs");
+  el.innerHTML = "";
+  DAYS.forEach(d => {
+    const btn = document.createElement("button");
+    btn.className = "day-btn" + (state.day === d.id ? " active" : "");
+    btn.innerHTML = d.label + '<span class="d">' + d.date + "</span>";
+    btn.onclick = () => { state.day = d.id; render(); };
+    el.appendChild(btn);
+  });
+}
+
+function renderResponsibilities() {
+  const el = document.getElementById("respArea");
+  el.innerHTML = "";
+  if (state.selected.size === 0) {
+    const hint = document.createElement("div");
+    hint.className = "empty-hint";
+    hint.textContent = "위에서 이름을 선택하면 담당 일정과 역할이 표시됩니다. (여러 명 동시 선택 가능)";
+    el.appendChild(hint);
+    return;
+  }
+
+  if (state.allMode) {
+    const hint = document.createElement("div");
+    hint.className = "empty-hint";
+    hint.textContent = "전체 팀원이 일정표에 표시됩니다. 개별 담당 목록을 보려면 이름을 하나씩 선택하세요.";
+    el.appendChild(hint);
+    return;
+  }
+
+  PEOPLE.filter(p => state.selected.has(p.id)).forEach(person => {
+    const leading = [];
+    DAYS.forEach(d => d.slots.forEach(s => {
+      if (s.owners.includes(person.id)) leading.push({ day: d.label, date: d.date, time: s.time, label: s.label });
+    }));
+
+    const card = document.createElement("div");
+    card.className = "responsibilities";
+    card.style.borderLeft = "5px solid " + person.color;
+
+    const honorific = person.name.endsWith("님") ? person.name : person.name + "님";
+    const collapsed = state.collapsed.has(person.id);
+
+    let bodyHtml = '<div class="resp-group"><h3>이번 주 리드하는 세션</h3>';
+    if (leading.length) {
+      leading.forEach(l => {
+        bodyHtml += '<div class="resp-item"><span class="tag">' + l.day + " " + l.time + '</span><span>' + l.label + "</span></div>";
+      });
+    } else {
+      bodyHtml += '<div class="resp-item" style="color:var(--muted)">이번 주 리드하는 세션이 없습니다</div>';
+    }
+    bodyHtml += "</div>";
+
+    const standing = STANDING_ROLES[person.id] || [];
+    if (standing.length) {
+      bodyHtml += '<div class="resp-group"><h3>상시 역할</h3>';
+      standing.forEach(r => { bodyHtml += '<div class="resp-item"><span>' + r + "</span></div>"; });
+      bodyHtml += "</div>";
+    }
+
+    const prep = PREP_ROLES[person.id] || [];
+    if (prep.length) {
+      bodyHtml += '<div class="resp-group"><h3>사전 준비</h3>';
+      prep.forEach(r => { bodyHtml += '<div class="resp-item"><span>' + r + "</span></div>"; });
+      bodyHtml += "</div>";
+    }
+
+    card.innerHTML =
+      '<div class="resp-header"><h2>' + honorific + '의 담당</h2><span class="chevron">' + (collapsed ? "▸" : "▾") + '</span></div>' +
+      '<div class="resp-body" style="display:' + (collapsed ? "none" : "block") + '">' + bodyHtml + '</div>';
+
+    card.querySelector(".resp-header").onclick = () => {
+      if (state.collapsed.has(person.id)) state.collapsed.delete(person.id);
+      else state.collapsed.add(person.id);
+      render();
+    };
+
+    el.appendChild(card);
+  });
+}
+
+function renderSchedule() {
+  const el = document.getElementById("scheduleList");
+  el.innerHTML = "";
+  const day = DAYS.find(d => d.id === state.day);
+  day.slots.forEach(s => {
+    const row = document.createElement("div");
+    const matches = s.owners.filter(o => state.selected.has(o)).map(personById);
+    const mine = matches.length > 0;
+    row.className = "slot" + (mine ? " mine" : "") + (s.owners.length === 0 ? " unowned" : "");
+
+    let accent = "";
+    let badges = "";
+    if (mine) {
+      row.style.background = matches[0].color + "14";
+      accent = '<div class="accent">' + matches.map(m => '<span style="background:' + m.color + '"></span>').join("") + "</div>";
+      badges = '<div class="badges">' + matches.map(m =>
+        '<span class="badge" style="background:' + m.color + '">' + m.name + "</span>"
+      ).join("") + "</div>";
+    }
+
+    row.innerHTML =
+      accent +
+      '<div class="time">' + s.time + '</div>' +
+      '<div class="label">' + s.label + '</div>' +
+      badges;
+    el.appendChild(row);
+  });
+}
+
+function render() {
+  renderNames();
+  renderDayTabs();
+  renderResponsibilities();
+  renderSchedule();
+}
+
+render();
+</script>
+
+</body>
+</html>
