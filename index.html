@@ -367,9 +367,14 @@ function saveSelected() {
 const state = {
   selected: loadSelected(),
   day: "mon",
-  allMode: false,
   collapsed: new Set(),
 };
+
+// The only way every person can end up selected is via the "전체 선택"
+// button, since individual taps are single-select (MULTI_SELECT is off).
+function isAllMode() {
+  return state.selected.size === PEOPLE.length;
+}
 
 function personById(id) { return PEOPLE.find(p => p.id === id); }
 
@@ -390,7 +395,6 @@ function renderNames() {
         const alreadyOnlySelected = state.selected.has(p.id) && state.selected.size === 1;
         state.selected = alreadyOnlySelected ? new Set() : new Set([p.id]);
       }
-      state.allMode = false;
       saveSelected();
       render();
     };
@@ -404,10 +408,8 @@ function renderNames() {
   allBtn.onclick = () => {
     if (allSelected) {
       state.selected.clear();
-      state.allMode = false;
     } else {
       PEOPLE.forEach(p => state.selected.add(p.id));
-      state.allMode = true;
     }
     saveSelected();
     render();
@@ -417,7 +419,7 @@ function renderNames() {
   const clearBtn = document.createElement("button");
   clearBtn.className = "name-btn clear";
   clearBtn.textContent = "선택 해제";
-  clearBtn.onclick = () => { state.selected.clear(); state.allMode = false; saveSelected(); render(); };
+  clearBtn.onclick = () => { state.selected.clear(); saveSelected(); render(); };
   el.appendChild(clearBtn);
 }
 
@@ -444,7 +446,7 @@ function renderResponsibilities() {
     return;
   }
 
-  if (state.allMode) {
+  if (isAllMode()) {
     const hint = document.createElement("div");
     hint.className = "empty-hint";
     hint.textContent = "전체 팀원이 일정표에 표시됩니다. 개별 담당 목록을 보려면 이름을 하나씩 선택하세요.";
