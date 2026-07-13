@@ -253,6 +253,10 @@
 <footer>이름을 선택하면 내 담당 일정이 강조 표시됩니다.</footer>
 
 <script>
+// Feature toggle: allow tapping multiple names at once. Off = tapping a name
+// always replaces the selection with just that person ("전체 선택" still works).
+const MULTI_SELECT = false;
+
 const PEOPLE = [
   { id: "minju",    name: "민주",      color: "#E63946" },
   { id: "yesun",    name: "예선",        color: "#F4A261" },
@@ -379,8 +383,13 @@ function renderNames() {
     btn.textContent = p.name;
     if (isSelected) btn.style.background = p.color;
     btn.onclick = () => {
-      if (state.selected.has(p.id)) state.selected.delete(p.id);
-      else state.selected.add(p.id);
+      if (MULTI_SELECT) {
+        if (state.selected.has(p.id)) state.selected.delete(p.id);
+        else state.selected.add(p.id);
+      } else {
+        const alreadyOnlySelected = state.selected.has(p.id) && state.selected.size === 1;
+        state.selected = alreadyOnlySelected ? new Set() : new Set([p.id]);
+      }
       state.allMode = false;
       saveSelected();
       render();
@@ -430,7 +439,7 @@ function renderResponsibilities() {
   if (state.selected.size === 0) {
     const hint = document.createElement("div");
     hint.className = "empty-hint";
-    hint.textContent = "위에서 이름을 선택하면 담당 일정과 역할이 표시됩니다. (여러 명 동시 선택 가능)";
+    hint.textContent = "위에서 이름을 선택하면 담당 일정과 역할이 표시됩니다." + (MULTI_SELECT ? " (여러 명 동시 선택 가능)" : "");
     el.appendChild(hint);
     return;
   }
